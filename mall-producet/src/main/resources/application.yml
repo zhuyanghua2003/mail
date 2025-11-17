@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: mall-producet
+
+server:
+  port: 8040

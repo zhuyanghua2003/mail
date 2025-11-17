@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: mall-ware
+
+server:
+  port: 8041
