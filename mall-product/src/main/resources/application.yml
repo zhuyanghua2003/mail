@@ -1,6 +1,6 @@
 spring:
   application:
-    name: mall-producet
+    name: mall-product
 
 server:
   port: 8040

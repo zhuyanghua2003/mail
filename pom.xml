@@ -15,7 +15,7 @@
         <module>mall-member</module>
         <module>mall-coupon</module>
         <module>mall-order</module>
-        <module>mall-producet</module>
+        <module>mall-product</module>
     </modules>
 
 
