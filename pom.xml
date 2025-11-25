@@ -17,8 +17,12 @@
         <module>mall-commons</module>
         <module>mall-order</module>
         <module>mall-product</module>
-        <module>renren-fast-master</module>
+        <module>renren-fast</module>
         <module>renren-generator-master</module>
+        <module>mall-gateway</module>
+        <module>mall-third-party</module>
+
+
     </modules>
 
 

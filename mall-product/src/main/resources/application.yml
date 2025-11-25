@@ -2,5 +2,31 @@ spring:
   application:
     name: mall-product
 
+  datasource:
+    username: root
+    password: 123456
+    url: jdbc:mysql://192.168.6.128:3306/mall-pms
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.6.128:8848
+    alicloud: # 此处为映射块，必须包含缩进的子属性
+      access-key: LTAI5tLfmwSFVCmCGYH5YzwS
+      secret-key: BuEnOP2vVN01eNjV7L1z9NJA0mXJUP
+      oss: # OSS 配置的子节点
+        endpoint: oss-cn-shanghai.aliyuncs.com
+
+
+
 server:
   port: 8040
+
+
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 1
+      logic-not-delete-value: 0

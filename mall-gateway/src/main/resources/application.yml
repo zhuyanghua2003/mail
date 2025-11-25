@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: mall-gateway
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.6.128:8848
+
+    gateway:
+      routes:
+        - id: product_route
+          uri: lb://mall-product
+          predicates:
+            - Path=/app/product/**
+          filters:
+            - RewritePath=/app/(?<segment>/?.*), /$\{segment}
+        - id: third_route
+          uri: lb://mall-third-party
+          predicates:
+            - Path=/app/third/**
+          filters:
+            - RewritePath=/app/third/(?<segment>/?.*), /$\{segment}
+        - id: member_route
+          uri: lb://mall-member
+          predicates:
+            - Path=/app/member/**
+          filters:
+            - RewritePath=/app/(?<segment>/?.*), /$\{segment}
+        - id: app_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/app/**
+          filters:
+            - RewritePath=/app/(?<segment>/?.*), /renren-fast/$\{segment}
+server:
+  port: 8070
+
+
+
+

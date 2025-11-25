@@ -3,7 +3,7 @@ package com.msb.common.exception;
 /**
  * 自定义异常：锁定库存失败的情况下产生的异常信
  */
-public class NoStockExecption extends RuntimeException{
+public class  NoStockExecption extends RuntimeException{
 
     private Long skuId;
 
