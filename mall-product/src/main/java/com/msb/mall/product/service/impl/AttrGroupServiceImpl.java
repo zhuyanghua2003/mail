@@ -1,10 +1,18 @@
 package com.msb.mall.product.service.impl;
 
+import com.msb.mall.product.entity.AttrEntity;
+import com.msb.mall.product.service.AttrService;
+import com.msb.mall.product.vo.AttrGroupWithAttrsVO;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,6 +27,8 @@ import org.springframework.util.StringUtils;
 
 @Service("attrGroupService")
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
+    @Autowired
+    AttrService attrService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -59,6 +69,18 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     }
 
+    @Override
+    public List<AttrGroupWithAttrsVO> getAttrgroupWithAttrsByCatelogId(Long catelogId) {
+        List<AttrGroupEntity> attrGroups = this.list(new QueryWrapper<AttrGroupEntity>().eq("catelog_id", catelogId));
+        List<AttrGroupWithAttrsVO> list = attrGroups.stream().map((group) -> {
+            AttrGroupWithAttrsVO vo = new AttrGroupWithAttrsVO();
+            BeanUtils.copyProperties(group, vo);
+            List<AttrEntity> relationAttr = attrService.getRelationAttr(group.getAttrGroupId());
+            vo.setAttrs(relationAttr);
+            return vo;
+        }).collect(Collectors.toList());
+        return list;
+    }
 
 
 }

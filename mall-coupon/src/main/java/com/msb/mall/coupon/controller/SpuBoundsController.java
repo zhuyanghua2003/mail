@@ -42,6 +42,7 @@ public class SpuBoundsController {
     }
 
 
+
     /**
      * 信息
      */
@@ -60,6 +61,14 @@ public class SpuBoundsController {
     //@RequiresPermissions("coupon:spubounds:save")
     public R save(@RequestBody SpuBoundsEntity spuBounds){
 		spuBoundsService.save(spuBounds);
+
+        return R.ok();
+    }
+
+    @RequestMapping("/saveSpuBounds")
+    //@RequiresPermissions("coupon:spubounds:save")
+    public R saveSpuBounds(@RequestBody SpuBoundsEntity spuBounds){
+        spuBoundsService.save(spuBounds);
 
         return R.ok();
     }

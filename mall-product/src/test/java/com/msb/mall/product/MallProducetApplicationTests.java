@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-@SpringBootTest
+@SpringBootTest(classes = MallProducetApplication.class)
 class MallProducetApplicationTests {
     @Autowired
     BrandService brandService;

@@ -1,6 +1,7 @@
 package com.msb.mall.product.service.impl;
 
 import com.msb.mall.product.service.CategoryBrandRelationService;
+import com.msb.mall.product.vo.Catalog2VO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -95,6 +96,51 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
         if (!StringUtils.isEmpty(category.getName())){
             categoryBrandRelationService.updateCatelogName(category.getCatId(), category.getName());
         }
+    }
+
+    @Override
+    public List<CategoryEntity> getLevelCategory() {
+        List<CategoryEntity> list = baseMapper.queryLeve1Category();
+        return list;
+    }
+
+    private List<CategoryEntity> queryByParenCid(List<CategoryEntity> list,Long parentCid){
+        List<CategoryEntity> collect = list.stream().filter(item -> {
+            return item.getParentCid().equals(parentCid);
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
+
+    @Override
+    public Map<String, List<Catalog2VO>> getCatelog2JSON() {
+        List<CategoryEntity> list= baseMapper.selectList(new QueryWrapper<CategoryEntity>());
+
+        List<CategoryEntity> levelCategory = this.queryByParenCid(list, 0L);
+        Map<String, List<Catalog2VO>> map = levelCategory.stream().collect(Collectors.toMap(key -> key.getCatId().toString(), value -> {
+            List<CategoryEntity> l2Catalog = this.queryByParenCid(list, value.getCatId());
+            List<Catalog2VO> catalog2VOs = null;
+            if (l2Catalog != null && l2Catalog.size() > 0){
+                catalog2VOs = l2Catalog.stream().map(l2 -> {
+                    Catalog2VO catalog2VO = new Catalog2VO(l2.getParentCid().toString(), null, l2.getCatId().toString(), l2.getName());
+                    List<CategoryEntity> lsCatalogs = this.queryByParenCid(list, l2.getCatId());
+                    if (lsCatalogs != null && lsCatalogs.size() > 0){
+                        List<Catalog2VO.Catalog3VO> catalog3VOStream = lsCatalogs.stream().map(l3 -> {
+                            Catalog2VO.Catalog3VO catalog3VO = new Catalog2VO.Catalog3VO(l3.getParentCid().toString(), l3.getCatId().toString(), l3.getName());
+                            return catalog3VO;
+                        }).collect(Collectors.toList());
+                        catalog2VO.setCatalog3List(catalog3VOStream);
+                    }
+                    return catalog2VO;
+                }).collect(Collectors.toList());
+
+            }
+
+
+            return catalog2VOs;
+        }));
+
+        return map;
     }
 
     private List<Long> findParentPath(Long catelogId, List<Long> paths){
