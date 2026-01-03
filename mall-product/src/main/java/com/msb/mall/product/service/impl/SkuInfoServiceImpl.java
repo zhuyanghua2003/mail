@@ -7,15 +7,21 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.msb.common.utils.PageUtils;
 import com.msb.common.utils.Query;
 import com.msb.common.utils.R;
+import com.msb.mall.product.dao.SkuImagesDao;
 import com.msb.mall.product.dao.SkuInfoDao;
 import com.msb.mall.product.entity.SkuImagesEntity;
 import com.msb.mall.product.entity.SkuInfoEntity;
 import com.msb.mall.product.entity.SpuInfoDescEntity;
+import com.msb.mall.product.fegin.SeckillFeignService;
 import com.msb.mall.product.service.AttrGroupService;
 import com.msb.mall.product.service.SkuInfoService;
 import com.msb.mall.product.service.SkuSaleAttrValueService;
 import com.msb.mall.product.service.SpuInfoDescService;
 
+import com.msb.mall.product.vo.SeckillVO;
+import com.msb.mall.product.vo.SkuItemSaleAttrVO;
+import com.msb.mall.product.vo.SpuItemGroupAttrVO;
+import com.msb.mall.product.vo.SpuItemVO;
 import org.apache.skywalking.apm.toolkit.trace.Tag;
 import org.apache.skywalking.apm.toolkit.trace.Tags;
 import org.apache.skywalking.apm.toolkit.trace.Trace;
@@ -37,6 +43,11 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Autowired
     SkuInfoDao skuInfoDao;
 
+    @Autowired
+    ThreadPoolExecutor threadPoolExecutor;
+
+
+
 
 
     @Autowired
@@ -47,9 +58,12 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
     @Autowired
     SkuSaleAttrValueService skuSaleAttrValueService;
-
-
-
+    @Autowired
+    private SkuImagesDao skuImagesDao;
+    @Autowired
+    private SkuImagesServiceImpl skuImagesService;
+    @Autowired
+    SeckillFeignService seckillFeignService;
 
 
     @Override
@@ -142,6 +156,58 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     public List<String> getSkuSaleAttrs(Long skuId) {
 
         return this.skuInfoDao.getSkuSaleAttrs(skuId);
+    }
+
+    @Trace
+    @Tags({
+            @Tag(key = "item", value = "returnObj"),
+            @Tag(key = "itemParam", value = "arg[0]")
+    })
+    @Override
+    public SpuItemVO item(Long skuId) throws ExecutionException, InterruptedException {
+        SpuItemVO spuItemVO = new SpuItemVO();
+        CompletableFuture<SkuInfoEntity> skuInfofuture = CompletableFuture.supplyAsync(() -> {
+            SkuInfoEntity skuInfoEntity = getById(skuId);
+            spuItemVO.setInfo(skuInfoEntity);
+
+            return skuInfoEntity;
+        }, threadPoolExecutor);
+
+        CompletableFuture<Void> sakeFuture = skuInfofuture.thenAcceptAsync((res) -> {
+            List<SkuItemSaleAttrVO> saleAttrs = skuSaleAttrValueService.getSkuSaleAttrValueBySpuId(res.getSpuId());
+            spuItemVO.setSaleAttrs(saleAttrs);
+        }, threadPoolExecutor);
+
+        CompletableFuture<Void> spuFuture = skuInfofuture.thenAcceptAsync((res) -> {
+            SpuInfoDescEntity spuInfoDescEntity = spuInfoDescService.getById(res.getSpuId());
+            spuItemVO.setDesc(spuInfoDescEntity);
+        }, threadPoolExecutor);
+
+        CompletableFuture<Void> groupFuture = skuInfofuture.thenAcceptAsync((res) -> {
+            List<SpuItemGroupAttrVO> groupAttrVO = attrGroupService.getArrtgroupWithSpuId(res.getSpuId(), res.getCatalogId());
+            spuItemVO.setBaseAttrs(groupAttrVO);
+        }, threadPoolExecutor);
+
+        CompletableFuture<Void> imageFuture = CompletableFuture.runAsync(() -> {
+            List<SkuImagesEntity> images = skuImagesService.getImagesBySkuId(skuId);
+            spuItemVO.setImages(images);
+        }, threadPoolExecutor);
+
+        CompletableFuture<Void>  seckillFuture = CompletableFuture.runAsync(() -> {
+            //查询商品的秒杀活动
+            R r = seckillFeignService.getSeckillSessionBySkuId(skuId);
+            if(r.getCode() == 0){
+                //查询成功
+                SeckillVO seckillVO= JSON.parseObject(r.get("data").toString(),SeckillVO.class);
+                spuItemVO.setSeckillVO(seckillVO);
+            }
+
+        }, threadPoolExecutor);
+
+
+
+        CompletableFuture.allOf(sakeFuture,spuFuture,groupFuture,imageFuture,seckillFuture).get();
+        return spuItemVO;
     }
 
 }

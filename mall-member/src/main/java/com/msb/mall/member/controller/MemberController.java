@@ -3,12 +3,15 @@ package com.msb.mall.member.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
+import com.msb.common.exception.BizCodeEnume;
+import com.msb.mall.member.exception.PhoneExsitException;
+import com.msb.mall.member.exception.UserNameExsitException;
+import com.msb.mall.member.vo.MemberLoginVO;
+import com.msb.mall.member.vo.MemberReigerVO;
+import com.msb.mall.member.vo.SocialUser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.msb.mall.member.entity.MemberEntity;
 import com.msb.mall.member.service.MemberService;
@@ -25,11 +28,45 @@ import com.msb.common.utils.R;
  * @date 2025-11-18 18:48:53
  */
 @RestController
-@RequestMapping("member/member")
+@RequestMapping("/member/member")
 public class MemberController {
     @Autowired
     private MemberService memberService;
 
+
+    @PostMapping("/register")
+    public R register(@RequestBody MemberReigerVO vo){
+        try {
+            memberService.register(vo);
+        }catch (UserNameExsitException e){
+            return R.error(BizCodeEnume.USERNAME_EXSIT_EXCEPTION.getCode(), BizCodeEnume.USERNAME_EXSIT_EXCEPTION.getMsg());
+        }catch (PhoneExsitException e){
+            return R.error(BizCodeEnume.PHONE_EXSIT_EXCEPTION.getCode(), BizCodeEnume.PHONE_EXSIT_EXCEPTION.getMsg());
+        }catch (Exception e){
+            return R.error(BizCodeEnume.UNKNOW_EXCEPTION.getCode(), BizCodeEnume.UNKNOW_EXCEPTION.getMsg());
+        }
+
+        return R.ok();
+    }
+
+    @RequestMapping("/login")
+    public R login(@RequestBody MemberLoginVO vo){
+        MemberEntity entity= memberService.login(vo);
+        if (entity!=null){
+            return R.ok().put("entity", JSON.toJSONString( entity));
+        }
+        return R.error(BizCodeEnume.USERNAME_PHONE_VALID_EXCEPTION.getCode(), BizCodeEnume.USERNAME_PHONE_VALID_EXCEPTION.getMsg());
+    }
+
+
+    @RequestMapping("/oauth2/login")
+    public R socialLogin(@RequestBody SocialUser vo){
+        MemberEntity entity= memberService.login(vo);
+        if (entity!=null){
+            return R.ok().put("entity", JSON.toJSONString( entity));
+        }
+        return R.error(BizCodeEnume.USERNAME_PHONE_VALID_EXCEPTION.getCode(), BizCodeEnume.USERNAME_PHONE_VALID_EXCEPTION.getMsg());
+    }
     /**
      * 列表
      */

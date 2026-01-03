@@ -18,11 +18,11 @@ import com.msb.common.utils.R;
 
 
 /**
- * ??ɱ???Ʒ????
+ * 秒杀活动商品关联
  *
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:49
  */
 @RestController
 @RequestMapping("coupon/seckillskurelation")

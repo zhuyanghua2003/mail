@@ -7,13 +7,61 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.6.128:8848
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+        client-ip: localhost
 
     gateway:
       routes:
+        - id: msbmall_host_route1
+          uri: lb://mall-product
+          predicates:
+            - Host=mall.msb.com
+
+        - id: msbmall_host_route2
+          uri: lb://mall-product
+          predicates:
+            - Host=item.msb.com
+
+        - id: msb_search_host_route
+          uri: lb://mall-search
+          predicates:
+            - Host=search.msb.com
+
+        - id: msb_auth_host_route
+          uri: lb://mall-auth-server
+          predicates:
+            - Host=auth.msb.com
+
+        - id: msbmall_host_route5
+          uri: lb://mall-cart
+          predicates:
+            - Host=cart.msb.com
+
+        - id: msbmall_host_route6
+          uri: lb://mall-order
+          predicates:
+            - Host=order.msb.com
+
+        - id: msbmall_host_route7
+          uri: lb://mall-seckill
+          predicates:
+            - Host=seckill.msb.com
+
+
+
         - id: product_route
           uri: lb://mall-product
           predicates:
             - Path=/app/product/**
+          filters:
+            - RewritePath=/app/(?<segment>/?.*), /$\{segment}
+        - id: coupon_route
+          uri: lb://mall-coupon
+          predicates:
+            - Path=/app/coupon/**
           filters:
             - RewritePath=/app/(?<segment>/?.*), /$\{segment}
         - id: third_route
@@ -40,10 +88,8 @@ spring:
             - Path=/app/**
           filters:
             - RewritePath=/app/(?<segment>/?.*), /renren-fast/$\{segment}
-        - id: msbmall_host_route1
-          uri: lb://mall-product
-          predicates:
-            - Host=msb.mall.com
+
+
 
 
 server:

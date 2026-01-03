@@ -13,8 +13,11 @@ import com.msb.mall.product.entity.BrandEntity;
 import com.msb.mall.product.service.BrandService;
 import com.msb.mall.product.service.CategoryService;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -73,5 +76,22 @@ class MallProducetApplicationTests {
             System.out.println(aLong);
         }
     }
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+    @Test
+    public void test3(){
+        ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
+        ops.set("hello","world_"+Math.random());
+        String hello = ops.get("hello");
+        System.out.println("之前保存的数据是："+hello);
+    }
+    @Autowired
+    RedissonClient redissonClient;
+    @Test
+    public void test4(){
+        System.out.println(redissonClient);
+    }
+
+
 
 }

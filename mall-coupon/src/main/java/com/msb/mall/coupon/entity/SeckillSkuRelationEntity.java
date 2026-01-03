@@ -9,11 +9,11 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * ??ɱ???Ʒ????
+ * 秒杀活动商品关联
  * 
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:49
  */
 @Data
 @TableName("sms_seckill_sku_relation")
@@ -26,31 +26,31 @@ public class SeckillSkuRelationEntity implements Serializable {
 	@TableId
 	private Long id;
 	/**
-	 * ?id
+	 * 活动id
 	 */
 	private Long promotionId;
 	/**
-	 * ?????id
+	 * 活动场次id
 	 */
 	private Long promotionSessionId;
 	/**
-	 * ??Ʒid
+	 * 商品id
 	 */
 	private Long skuId;
 	/**
-	 * ??ɱ?۸
+	 * 秒杀价格
 	 */
 	private BigDecimal seckillPrice;
 	/**
-	 * ??ɱ????
+	 * 秒杀总量
 	 */
 	private BigDecimal seckillCount;
 	/**
-	 * ÿ???޹?????
+	 * 每人限购数量
 	 */
 	private BigDecimal seckillLimit;
 	/**
-	 * ???
+	 * 排序
 	 */
 	private Integer seckillSort;
 

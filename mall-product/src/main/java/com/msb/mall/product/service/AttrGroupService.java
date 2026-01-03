@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.msb.common.utils.PageUtils;
 import com.msb.mall.product.entity.AttrGroupEntity;
 import com.msb.mall.product.vo.AttrGroupWithAttrsVO;
+import com.msb.mall.product.vo.SpuItemGroupAttrVO;
+import com.msb.mall.product.vo.SpuItemVO;
 
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,8 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
 
 
     List<AttrGroupWithAttrsVO> getAttrgroupWithAttrsByCatelogId(Long catelogId);
+
+    List<SpuItemGroupAttrVO> getArrtgroupWithSpuId(Long spuId, Long catalogId);
 
 }
 

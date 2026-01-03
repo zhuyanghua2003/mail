@@ -3,11 +3,12 @@ package com.msb.mall.product.service.impl;
 import com.msb.mall.product.entity.AttrEntity;
 import com.msb.mall.product.service.AttrService;
 import com.msb.mall.product.vo.AttrGroupWithAttrsVO;
+import com.msb.mall.product.vo.SpuItemGroupAttrVO;
+import com.msb.mall.product.vo.SpuItemVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,8 @@ import org.springframework.util.StringUtils;
 public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEntity> implements AttrGroupService {
     @Autowired
     AttrService attrService;
+    @Autowired
+    AttrGroupDao attrGroupDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -80,6 +83,13 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
             return vo;
         }).collect(Collectors.toList());
         return list;
+    }
+
+    @Override
+    public List<SpuItemGroupAttrVO> getArrtgroupWithSpuId(Long spuId, Long catalogId) {
+
+        List<SpuItemGroupAttrVO> groupAttrVO = attrGroupDao.getAttrgroupWithSpuId(spuId,catalogId);
+        return groupAttrVO;
     }
 
 

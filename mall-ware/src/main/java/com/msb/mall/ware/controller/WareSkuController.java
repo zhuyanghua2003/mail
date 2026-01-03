@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.msb.common.dto.SkuHasStockDto;
+import com.msb.common.exception.BizCodeEnume;
+import com.msb.common.exception.NoStockExecption;
+import com.msb.mall.ware.vo.LockStockResult;
+import com.msb.mall.ware.vo.WareSkuLockVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +27,42 @@ import com.msb.common.utils.R;
  * @email dengpbs@163.com
  * @date 2025-11-18 18:41:49
  */
+@Slf4j
 @RestController
 @RequestMapping("ware/waresku")
 public class WareSkuController {
     @Autowired
     private WareSkuService wareSkuService;
+
+    @PostMapping("/lock/order")
+    public R orderLockStock(@RequestBody WareSkuLockVO vo){
+        try {
+            Boolean flag= wareSkuService.orderLockStock(vo);
+            System.out.println( flag);
+        }catch (NoStockExecption e){
+            return R.error(BizCodeEnume.NO_STOCK_EXCEPTION.getCode(), BizCodeEnume.NO_STOCK_EXCEPTION.getMsg());
+        }
+
+        return R.ok();
+    }
+
+    //扣减库存
+    @PostMapping("/deduct")
+    public R orderDeductStock(@RequestBody WareSkuLockVO vo){
+
+        try {
+            Boolean flag = wareSkuService.orderDeductStock(vo);
+            log.info("库存扣减成功");
+        }catch (NoStockExecption e){
+            log.error("库存扣减失败");
+            return R.error(BizCodeEnume.NO_STOCK2_EXCEPTION.getCode(), BizCodeEnume.NO_STOCK2_EXCEPTION.getMsg());
+        }
+
+
+        return R.ok();
+    }
+
+
 
     @PostMapping("/hasStock")
     //@RequiresPermissions("ware:waresku:list")

@@ -18,11 +18,11 @@ import com.msb.common.utils.R;
 
 
 /**
- * ??ҳ?ֲ????
+ * 首页轮播广告
  *
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:00
  */
 @RestController
 @RequestMapping("coupon/homeadv")

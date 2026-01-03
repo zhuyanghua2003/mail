@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: mall-cart
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 192.168.6.128:8848
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+        client-ip: localhost
+  redis:
+    host: 192.168.6.128
+    port: 6379
+    password: 123456
+  session:
+    store-type: redis
+    redis:
+      namespace: spring:session
+
+
+server:
+  port: 8098
+  servlet:
+    session:
+      timeout: 30m
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

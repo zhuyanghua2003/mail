@@ -7,11 +7,11 @@ import com.msb.mall.coupon.entity.SpuBoundsEntity;
 import java.util.Map;
 
 /**
- * ??Ʒspu???????
+ * 商品spu积分设置
  *
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:49
  */
 public interface SpuBoundsService extends IService<SpuBoundsEntity> {
 

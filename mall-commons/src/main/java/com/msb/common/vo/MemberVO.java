@@ -8,9 +8,7 @@ import java.util.Date;
 
 @ToString
 @Data
-public class MemberVO implements Serializable  {
-    private static final long serialVersionUID = 1L;
-
+public class MemberVO implements Serializable {
 
     private Long id;
 
@@ -49,7 +47,8 @@ public class MemberVO implements Serializable  {
     private Date createTime;
 
     private String socialUid;
-    private String accessToken;
-    private long expiresIn;
 
+    private String accessToken;
+
+    private long expiresIn;
 }

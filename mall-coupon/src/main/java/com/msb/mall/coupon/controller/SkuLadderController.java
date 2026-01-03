@@ -18,11 +18,11 @@ import com.msb.common.utils.R;
 
 
 /**
- * ??Ʒ???ݼ۸
+ * 商品阶梯价格
  *
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:49
  */
 @RestController
 @RequestMapping("coupon/skuladder")

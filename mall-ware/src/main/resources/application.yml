@@ -12,6 +12,14 @@ spring:
     nacos:
       discovery:
         server-addr: 192.168.6.128:8848
+    alibaba:
+      seata:
+        tx-service-group: mall-ware-group
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+        client-ip: localhost
 
 server:
   port: 8041
@@ -21,3 +29,9 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

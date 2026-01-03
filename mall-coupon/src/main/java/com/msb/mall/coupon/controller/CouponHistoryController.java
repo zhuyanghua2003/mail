@@ -18,11 +18,11 @@ import com.msb.common.utils.R;
 
 
 /**
- * ?Ż?ȯ??ȡ??ʷ??¼
+ * 优惠券领取历史记录
  *
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:00
  */
 @RestController
 @RequestMapping("coupon/couponhistory")

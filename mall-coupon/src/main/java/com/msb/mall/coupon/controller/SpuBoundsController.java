@@ -18,11 +18,11 @@ import com.msb.common.utils.R;
 
 
 /**
- * ??Ʒspu???????
+ * 商品spu积分设置
  *
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:49
  */
 @RestController
 @RequestMapping("coupon/spubounds")
@@ -40,7 +40,6 @@ public class SpuBoundsController {
 
         return R.ok().put("page", page);
     }
-
 
 
     /**
@@ -61,14 +60,6 @@ public class SpuBoundsController {
     //@RequiresPermissions("coupon:spubounds:save")
     public R save(@RequestBody SpuBoundsEntity spuBounds){
 		spuBoundsService.save(spuBounds);
-
-        return R.ok();
-    }
-
-    @RequestMapping("/saveSpuBounds")
-    //@RequiresPermissions("coupon:spubounds:save")
-    public R saveSpuBounds(@RequestBody SpuBoundsEntity spuBounds){
-        spuBoundsService.save(spuBounds);
 
         return R.ok();
     }

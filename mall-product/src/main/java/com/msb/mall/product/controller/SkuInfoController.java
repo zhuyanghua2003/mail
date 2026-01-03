@@ -53,6 +53,8 @@ public class SkuInfoController {
         return R.ok().put("skuInfo", skuInfo).put("skuInfoJSON", JSON.toJSONString(skuInfo));
     }
 
+
+
     /**
      * 保存
      */

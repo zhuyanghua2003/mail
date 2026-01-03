@@ -1,6 +1,7 @@
 package com.msb.mall.product.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.msb.common.constant.ProductConstant;
 import com.msb.common.dto.MemberPrice;
 import com.msb.common.dto.SkuHasStockDto;
 import com.msb.common.dto.SkuReductionDTO;
@@ -29,6 +30,7 @@ import com.msb.common.utils.Query;
 
 import com.msb.mall.product.dao.SpuInfoDao;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 
@@ -272,51 +274,100 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         return new PageUtils(iPage);
     }
 
+    @Transactional
     @Override
     public void up(Long spuId) {
-        //根据spuId查询出所有的sku信息，并封装
-        List<SkuESModel> skuEs=new ArrayList<>();
+        // 1.根据spuId查询相关的信息 封装到SkuESModel对象中
+        List<SkuESModel> skuEs = new ArrayList<>();
+        // 根据spuID找到对应的SKU信息
         List<SkuInfoEntity> skus = skuInfoService.getSkusBySpuId(spuId);
-        List<SkuESModel.Attrs> attrsModel = getAttrsModel(spuId);
+        log.info("【商品上架】根据spuId={}查询到SKU列表，数量={}，SKU详情={}",
+                spuId, CollectionUtils.isEmpty(skus) ? 0 : skus.size(), skus);
+        if (CollectionUtils.isEmpty(skus)) {
+            log.warn("【商品上架】spuId={}未查询到任何SKU信息，上架流程终止", spuId);
+            return;
+        }
 
+        // 对应的规格参数  根据spuId来查询规格参数信息
+        List<SkuESModel.Attrs> attrsModel = getAttrsModel(spuId);
+        log.info("【商品上架】根据spuId={}查询到SKU列表，数量={}，SKU详情={}",
+                spuId, CollectionUtils.isEmpty(skus) ? 0 : skus.size(), skus);
+        if (CollectionUtils.isEmpty(attrsModel)) {
+            log.warn("【商品上架】spuId={}未查询到可检索规格属性（attrs），后续ES中attrs字段为空", spuId);
+        }
+        // 需要根据所有的skuId获取对应的库存信息---》远程调用
         List<Long> skuIds = skus.stream().map(sku -> {
             return sku.getSkuId();
         }).collect(Collectors.toList());
+        log.info("【商品上架】待查询库存的SKU ID列表={}", skuIds);
         Map<Long, Boolean> skusHasStockMap = getStatus(skuIds);
-
-
+        log.info("【商品上架】库存查询结果：skuHasStockMap={}", skusHasStockMap);
+        if (skusHasStockMap == null || skusHasStockMap.isEmpty()) {
+            log.warn("【商品上架】库存查询结果为空，默认所有SKU标记为有库存");
+        }
+        // 2.远程调用mall-search的服务，将SukESModel中的数据存储到ES中
         List<SkuESModel> skuESModels = skus.stream().map(item -> {
             SkuESModel model = new SkuESModel();
-            BeanUtils.copyProperties(item, model);
+            // 先实现属性的复制
+            BeanUtils.copyProperties(item,model);
             model.setSubTitle(item.getSkuTitle());
             model.setSkuPrice(item.getPrice());
+            model.setSkuImg(item.getSkuDefaultImg());
 
-            if (skusHasStockMap == null){
+            // hasStock 是否有库存 --》 库存系统查询  一次远程调用获取所有的skuId对应的库存信息
+            if(skusHasStockMap == null){
                 model.setHasStock(true);
-            }else {
+            }else{
                 model.setHasStock(skusHasStockMap.get(item.getSkuId()));
             }
-            model.setHotScore(0L);
+            // hotScore 热度分 --> 默认给0即可
+            model.setHotScore(0l);
+            // 品牌和类型的名称
             BrandEntity brand = brandService.getById(item.getBrandId());
             CategoryEntity category = categoryService.getById(item.getCatalogId());
             model.setBrandName(brand.getName());
             model.setBrandImg(brand.getLogo());
             model.setCatalogName(category.getName());
-            model.setCatalogId(category.getCatId());
+            // 需要存储的规格数据
             model.setAttrs(attrsModel);
+
             return model;
         }).collect(Collectors.toList());
-
-
+        // 将SkuESModel中的数据存储到ES中
         R r = searchFeginService.productStatusUp(skuESModels);
-        if (r.getCode() == 0){
-            log.info("调用Search服务处理商品上架成功,参数为{}",skuESModels);
-            baseMapper.updateSpuStatusUp(spuId,1);
-        }else {
-            log.error("调用Search服务处理商品上架失败,参数为{}",skuESModels);
+        // 3.更新SPUID对应的状态
+        // 根据对应的状态更新商品的状态
+        log.info("----->ES操作完成：{}" ,r.getCode());
+        System.out.println("-------------->"+r.getCode());
+        if(r.getCode() == 0){
+            // 远程调用成功  更新商品的状态为 上架
+            baseMapper.updateSpuStatusUp(spuId, ProductConstant.StatusEnum.SPU_UP.getCode());
+        }else{
+            // 远程调用失败
         }
+    }
 
+    @Override
+    public List<OrderItemSpuInfoVO> getOrderItemSpuInfoBySpuId(Long[] spuIds) {
+        List<OrderItemSpuInfoVO> list = new ArrayList<>();
+        for (Long spuId : spuIds){
+            OrderItemSpuInfoVO vo=new OrderItemSpuInfoVO();
+            SpuInfoEntity spuInfoEntity=this.getById(spuId);
+            vo.setId(spuInfoEntity.getId());
+            vo.setSpuName(spuInfoEntity.getSpuName());
+            vo.setBrandId(spuInfoEntity.getBrandId());
+            vo.setCatalogId(spuInfoEntity.getCatalogId());
 
+            BrandEntity brand = brandService.getById(spuInfoEntity.getBrandId());
+            vo.setBrandName(brand.getName());
+            CategoryEntity category = categoryService.getById(spuInfoEntity.getCatalogId());
+            vo.setCatalogName(category.getName());
+
+            SpuInfoDescEntity descEntity = spuInfoDescService.getById(spuId);
+            vo.setImg(descEntity.getDecript());
+            list.add(vo);
+        }
+        return list;
     }
 
     private Map<Long,Boolean> getStatus(List<Long> spuIds) {
@@ -339,17 +390,31 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     }
 
     private List<SkuESModel.Attrs> getAttrsModel(Long spuId) {
+        // 1. product_attr_value 存储了对应的spu相关的所有的规格参数
         List<ProductAttrValueEntity> baseAttrs = productAttrValueService.baseAttrsForSpuId(spuId);
-        List<Long> attrIds = baseAttrs.stream().map(item -> item.getAttrId()).collect(Collectors.toList());
-        //查询出所有可检索的规格参数编号
-        List<Long> searchAttrIds= attrService.selectSearchAttrs(attrIds);
-
+        log.info("spuId={}，查询到的基础属性baseAttrs={}", spuId, baseAttrs);
+        if (CollectionUtils.isEmpty(baseAttrs)) {
+            log.warn("spuId={}未查询到任何基础属性！", spuId);
+            return new ArrayList<>();
+        }
+        // 2. attr  search_type 决定该属性是否支持检索
+        List<Long> attrIds = baseAttrs.stream().map(item -> {
+            return item.getAttrId();
+        }).collect(Collectors.toList());
+        // 查询出所有的可以检索的对应的规格参数编号
+        List<Long> searchAttrIds = attrService.selectSearchAttrs(attrIds);
+        // baseAttrs中根据可以检索的数据过滤
         List<SkuESModel.Attrs> attrsModel = baseAttrs.stream().filter(item -> {
             return searchAttrIds.contains(item.getAttrId());
         }).map(item -> {
-            SkuESModel.Attrs attrs = new SkuESModel.Attrs();
-            BeanUtils.copyProperties(item, attrs);
-            return attrs;
+            SkuESModel.Attrs attr = new SkuESModel.Attrs();
+            attr.setAttrId(item.getAttrId());
+            attr.setAttrName(item.getAttrName());
+            attr.setAttrValue(item.getAttrValue());
+            BeanUtils.copyProperties(item, attr);
+            log.info("【商品上架】将属性属性值映射为ES模型，属性编号={}，属性名称={}，属性值={}",
+                    attr.getAttrId(), attr.getAttrName(), attr.getAttrValue());
+            return attr;
         }).collect(Collectors.toList());
         return attrsModel;
     }

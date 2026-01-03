@@ -4,7 +4,22 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
   thymeleaf:
-    cache: true
+    cache: false
+  redis:
+    host: 192.168.6.128
+    port: 6379
+    password: 123456
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60000
+    #  key-prefix: mall_
+      use-key-prefix: true
+      cache-null-values: true
+  session:
+    store-type: redis
+    redis:
+      namespace: spring:session
 
   datasource:
     username: root
@@ -20,6 +35,11 @@ spring:
       secret-key: BuEnOP2vVN01eNjV7L1z9NJA0mXJUP
       oss: # OSS 配置的子节点
         endpoint: oss-cn-shanghai.aliyuncs.com
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+        client-ip: localhost
 
 
 server:
@@ -34,4 +54,15 @@ mybatis-plus:
       logic-delete-value: 1h
       logic-not-delete-value: 0
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+feign:
+  sentinel:
+    enabled: true
 

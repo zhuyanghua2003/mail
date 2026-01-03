@@ -8,11 +8,11 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * ?Ż?ȯ????????
+ * 优惠券分类关联
  * 
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:00
  */
 @Data
 @TableName("sms_coupon_spu_category_relation")
@@ -25,15 +25,15 @@ public class CouponSpuCategoryRelationEntity implements Serializable {
 	@TableId
 	private Long id;
 	/**
-	 * ?Ż?ȯid
+	 * 优惠券id
 	 */
 	private Long couponId;
 	/**
-	 * ??Ʒ????id
+	 * 产品分类id
 	 */
 	private Long categoryId;
 	/**
-	 * ??Ʒ???????
+	 * 产品分类名称
 	 */
 	private String categoryName;
 

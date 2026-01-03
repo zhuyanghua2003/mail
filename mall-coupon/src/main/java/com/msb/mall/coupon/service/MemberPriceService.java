@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author dpb
  * @email dengpbs@163.com
- * @date 2021-11-24 19:50:53
+ * @date 2025-12-18 22:57:00
  */
 public interface MemberPriceService extends IService<MemberPriceEntity> {
 

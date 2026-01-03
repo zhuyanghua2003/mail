@@ -1,6 +1,7 @@
 import com.aliyun.oss.OSSClient;
 
 import com.msb.mall.thirdparty.ThirdPartyStarterApp;
+import com.msb.mall.thirdparty.utils.SmsComponent;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -37,6 +38,12 @@ class MallProducetApplicationTests {
         // 关闭OSSClient。
         ossClient.shutdown();
         System.out.println("长传图片成功...");
+    }
+    @Autowired
+    private SmsComponent smsComponent;
+    @Test
+    public void sendSmsCode(){
+        smsComponent.sendSmsCode("15005898880","6666");
     }
 
 }

@@ -2,6 +2,8 @@ package com.msb.mall.product.dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.msb.mall.product.entity.AttrGroupEntity;
+import com.msb.mall.product.vo.SpuItemGroupAttrVO;
+import com.msb.mall.product.vo.SpuItemVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,5 +18,7 @@ import java.util.List;
  */
 @Mapper
 public interface AttrGroupDao extends BaseMapper<AttrGroupEntity> {
+
+    List<SpuItemGroupAttrVO> getAttrgroupWithSpuId(@Param("spuId") Long spuId, @Param("catalogId") Long catalogId);
 
 }

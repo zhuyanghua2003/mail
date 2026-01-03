@@ -9,11 +9,11 @@ import java.util.Date;
 import lombok.Data;
 
 /**
- * ??Ʒ???ݼ۸
+ * 商品阶梯价格
  * 
  * @author dpb
  * @email dengpbs@163.com
- * @date 2025-11-18 18:45:28
+ * @date 2025-12-18 22:57:49
  */
 @Data
 @TableName("sms_sku_ladder")
@@ -30,19 +30,19 @@ public class SkuLadderEntity implements Serializable {
 	 */
 	private Long skuId;
 	/**
-	 * ??????
+	 * 满几件
 	 */
 	private Integer fullCount;
 	/**
-	 * ?????
+	 * 打几折
 	 */
 	private BigDecimal discount;
 	/**
-	 * ?ۺ
+	 * 折后价
 	 */
 	private BigDecimal price;
 	/**
-	 * ?Ƿ??????????Ż?[0-???ɵ??ӣ?1-?ɵ???]
+	 * 是否叠加其他优惠[0-不可叠加，1-可叠加]
 	 */
 	private Integer addOther;
 
