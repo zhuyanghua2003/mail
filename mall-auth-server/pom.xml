@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.msb.mall</groupId>
-    <artifactId>mall-auth_server</artifactId>
+    <artifactId>mall-auth-server</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>mall-auth_server</name>
     <description>认证服务</description>

@@ -3,26 +3,31 @@ spring:
     name: mall-ware
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates
+    suffix: .html
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://192.168.6.128:3306/mall-wms
+    url: jdbc:mysql://mysql-master.sangomall.svc.cluster.local.:3306/mall_wms
     driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.6.128:8848
+        server-addr: nacos-server.sangomall.svc.cluster.local.:8848
     alibaba:
       seata:
         tx-service-group: mall-ware-group
     sentinel:
       transport:
         port: 8719
-        dashboard: localhost:8080
+        dashboard: sentinel-server.sangomall.svc.cluster.local.:8858
         client-ip: localhost
 
 server:
-  port: 8041
+  port: 8050
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml

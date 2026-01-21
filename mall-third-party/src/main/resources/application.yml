@@ -5,11 +5,11 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.6.128:8848
+        server-addr: nacos-server.sangomall.svc.cluster.local.:8848
     sentinel:
       transport:
         port: 8719
-        dashboard: localhost:8080
+        dashboard: sentinel-server.sangomall.svc.cluster.local.:8858
         client-ip: localhost
     alicloud: # 此处为映射块，必须包含缩进的子属性
       access-key: LTAI5tLfmwSFVCmCGYH5YzwS
@@ -25,7 +25,7 @@ spring:
 
 
 server:
-  port: 8049
+  port: 8100
 
 management:
   endpoints:

@@ -12,7 +12,7 @@ public class MyRedisConfig {
     @Bean
     public RedissonClient redissonClient(){
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://192.168.6.128:6379");
+        config.useSingleServer().setAddress("redis://redis.sangomall.svc.cluster.local.:6379");
         config.useSingleServer().setPassword("123456");
         RedissonClient redissonClient = Redisson.create(config);
         return redissonClient;

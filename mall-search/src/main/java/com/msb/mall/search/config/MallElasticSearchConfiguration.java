@@ -27,7 +27,7 @@ public class MallElasticSearchConfiguration {
         );
         // 2. 构建 RestClientBuilder
         RestClientBuilder builder = RestClient.builder(
-                new HttpHost("192.168.6.128", 9200, "http")
+                new HttpHost("elasticsearch.sangomall.svc.cluster.local.", 9200, "http")
         );
 
         // 3. 配置 HTTP 客户端，添加认证信息

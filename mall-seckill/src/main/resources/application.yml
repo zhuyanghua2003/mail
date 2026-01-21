@@ -3,16 +3,16 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.6.128:8848
+        server-addr: nacos-server.sangomall.svc.cluster.local.:8848
     sentinel:
       transport:
         port: 8719
-        dashboard: localhost:8080
+        dashboard: sentinel-server.sangomall.svc.cluster.local.:8858
         client-ip: localhost
   application:
     name: mall-seckill
   redis:
-    host: 192.168.6.128
+    host: redis.sangomall.svc.cluster.local.
     port: 6379
     password: 123456
   task:
@@ -32,7 +32,7 @@ server:
 
 # RocketMQ的相关信息
 rocketmq:
-  name-server: 192.168.6.128:9876
+  name-server: rocketmq-namesrv.sangomall.svc.cluser.local.:9876
   producer:
     group: seckill-order-producer
   consumer:

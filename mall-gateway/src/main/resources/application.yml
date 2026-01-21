@@ -6,11 +6,11 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: 192.168.6.128:8848
+        server-addr: nacos-server.sangomall.svc.cluster.local.:8848
     sentinel:
       transport:
         port: 8719
-        dashboard: localhost:8080
+        dashboard: sentinel-server.sangomall.svc.cluster.local.:8858
         client-ip: localhost
 
     gateway:
@@ -93,7 +93,7 @@ spring:
 
 
 server:
-  port: 8070
+  port: 8072
   address: 0.0.0.0
   tomcat:
     max-threads: 1000 # 最大工作线程（老师的服务肯定调过）
