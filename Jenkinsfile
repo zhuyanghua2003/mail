@@ -115,56 +115,9 @@ pipeline {
         input(message: '是否允许发布微服务项目到k8s集群', submitter: 'project-admin')
         container('maven') {
           withCredentials([kubeconfigContent(credentialsId: 'sangomall-kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
-                    sh '''#!/bin/bash
-set -e  # 任意命令失败时立即退出，避免掩盖错误
-
-# ========== 1. 初始化KubeConfig（核心，确保kubectl能连接集群） ==========
-mkdir -p ~/.kube
+             sh '''mkdir ~/.kube
 echo "$KUBECONFIG_CONTENT" > ~/.kube/config
-chmod 600 ~/.kube/config  # 修复kubeconfig权限（K8s要求必须600）
-
-# ========== 2. 安装kubectl（兼容alpine/debian/ubuntu系统） ==========
-if command -v apt-get &>/dev/null; then
-  # debian/ubuntu系统
-  apt-get update && apt-get install -y kubectl
-elif command -v apk &>/dev/null; then
-  # alpine系统
-  apk add --no-cache kubectl
-else
-  echo "不支持的系统，无法安装kubectl"
-  exit 1
-fi
-
-# ========== 3. 校验前置条件（避免部署失败） ==========
-# 检查deploy.yaml文件是否存在
-DEPLOY_YAML="${PROJECT_NAME}/deploy/deploy.yaml"
-if [ ! -f "$DEPLOY_YAML" ]; then
-  echo "错误：部署文件 $DEPLOY_YAML 不存在！"
-  exit 1
-fi
-
-# 检查PROJECT_NAME变量是否为空
-if [ -z "$PROJECT_NAME" ]; then
-  echo "错误：PROJECT_NAME变量为空！"
-  exit 1
-fi
-
-# ========== 4. 变量替换 + 部署（增加日志，便于排查） ==========
-echo "开始替换变量并部署 $PROJECT_NAME ..."
-envsubst < "$DEPLOY_YAML" > "${PROJECT_NAME}/deploy/deploy-merged.yaml"  # 生成替换后的YAML（便于排查）
-cat "${PROJECT_NAME}/deploy/deploy-merged.yaml"  # 打印替换后的YAML，确认镜像/参数正确
-kubectl apply -f "${PROJECT_NAME}/deploy/deploy-merged.yaml" -n sangomall
-
-# ========== 5. 部署后校验（等待Pod创建，检查状态） ==========
-echo "等待 $PROJECT_NAME 的Pod启动..."
-kubectl wait --for=condition=available deployment/$PROJECT_NAME -n sangomall --timeout=120s || {
-  echo "警告：$PROJECT_NAME 部署超时，查看Pod日志："
-  kubectl logs -l app=$PROJECT_NAME -n sangomall --previous
-  exit 1
-}
-
-echo "$PROJECT_NAME 部署成功！"
-'''
+envsubst < $PROJECT_NAME/deploy/deploy.yaml | kubectl apply -f -'''
           }
 
         }
