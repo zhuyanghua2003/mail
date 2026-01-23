@@ -126,3 +126,4 @@ envsubst < "${PROJECT_NAME}/deploy/deploy.yaml" | kubectl apply -f -'''
     }
 
   }
+}
