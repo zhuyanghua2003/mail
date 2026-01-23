@@ -91,10 +91,20 @@ pipeline {
             sh 'git config --global user.email "1191082340@qq.com"'
             sh 'git config --global user.name "zhuyanghua2003"'
             sh 'git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION"'
-            sh 'mkdir -p ~/.ssh && cp $GITHUB_SSH_KEY ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519'
-            sh 'ssh-keyscan github.com >> ~/.ssh/known_hosts'
-            sh 'git remote set-url origin git@github.com:zhuyanghua2003/mail.git'
-            sh 'git push origin --tags --ipv4'
+            sh '''
+              # 配置SSH环境
+              mkdir -p ~/.ssh && chmod 700 ~/.ssh
+              cp $GITHUB_SSH_KEY ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
+              ssh-keyscan github.com >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
+          
+              # 启动ssh-agent并加载密钥（核心修复）
+              eval $(ssh-agent -s)
+              ssh-add ~/.ssh/id_ed25519
+          
+              # 切换到SSH仓库地址并推送
+              git remote set-url origin git@github.com:zhuyanghua2003/mail.git
+              git push origin --tags --ipv4
+            '''
           }
 
           sh 'docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:$PROJECT_VERSION'
