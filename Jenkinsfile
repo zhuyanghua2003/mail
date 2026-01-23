@@ -97,9 +97,9 @@ pipeline {
               cp $GITHUB_SSH_KEY ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
               ssh-keyscan github.com >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
           
-              # 启动ssh-agent并加载密钥（核心修复）
+              # 启动ssh-agent并加载密钥（仅改这行：加 -N "" 跳过密码询问）
               eval $(ssh-agent -s)
-              ssh-add ~/.ssh/id_ed25519
+              ssh-add -N "" ~/.ssh/id_ed25519 
           
               # 切换到SSH仓库地址并推送
               git remote set-url origin git@github.com:zhuyanghua2003/mail.git
