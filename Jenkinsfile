@@ -91,7 +91,9 @@ pipeline {
             sh 'git config --global user.email "1191082340@qq.com"'
             sh 'git config --global user.name "zhuyanghua"'
             sh 'git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION"'
-            sh 'git push http://zhuyanghua2003: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@github.com/zhuyanghua2003/mail.git --tags --ipv4'
+            sh 'git config --global credential.helper store'
+            sh 'echo "https://zhuyanghua2003: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@github.com" > ~/.git-credentials'
+            sh 'git push https://github.com/zhuyanghua2003/mail.git --tags --ipv4'
           }
 
           sh 'docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:$PROJECT_VERSION'
