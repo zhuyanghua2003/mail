@@ -87,13 +87,14 @@ pipeline {
       steps {
         container('maven') {
           input(message: '是否提交带有tag发布版本的容器镜像', submitter: 'project-admin')
-          withCredentials([usernamePassword(credentialsId: 'github-pat-id', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
+          withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh-id', keyFileVariable: 'GITHUB_SSH_KEY')]) {
             sh 'git config --global user.email "1191082340@qq.com"'
-            sh 'git config --global user.name "zhuyanghua"'
+            sh 'git config --global user.name "zhuyanghua2003"'
             sh 'git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION"'
-            sh 'git remote set-url origin https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/zhuyanghua2003/mail.git'
+            sh 'mkdir -p ~/.ssh && cp $GITHUB_SSH_KEY ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519'
+            sh 'ssh-keyscan github.com >> ~/.ssh/known_hosts'
+            sh 'git remote set-url origin git@github.com:zhuyanghua2003/mail.git'
             sh 'git push origin --tags --ipv4'
-            sh 'git remote set-url origin https://github.com/zhuyanghua2003/mail.git' // 恢复原远程地址
           }
 
           sh 'docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:$PROJECT_VERSION'
