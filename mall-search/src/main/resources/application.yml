@@ -12,7 +12,7 @@ spring:
   datasource:
     username: root
     password: 123456
-    url: jdbc:mysql://192.168.6.128:3306/mall-wms
+    url: jdbc:mysql://mysql-master.sangomall.svc.cluster.local.:3306/mall-wms
     driver-class-name: com.mysql.cj.jdbc.Driver
   cloud:
     nacos:
