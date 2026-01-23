@@ -87,13 +87,13 @@ pipeline {
       steps {
         container('maven') {
           input(message: '是否提交带有tag发布版本的容器镜像', submitter: 'project-admin')
-          withCredentials([usernamePassword(credentialsId: 'gitee-id', passwordVariable: 'GITEE_PASSWORD', usernameVariable: 'GITEE_USERNAME')]) {
+          withCredentials([usernamePassword(credentialsId: 'github-pat-id', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
             sh 'git config --global user.email "1191082340@qq.com"'
             sh 'git config --global user.name "zhuyanghua"'
             sh 'git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION"'
-            sh 'git config --global credential.helper store'
-            sh 'echo "https://zhuyanghua2003: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@github.com" > ~/.git-credentials'
-            sh 'git push https://github.com/zhuyanghua2003/mail.git --tags --ipv4'
+    
+            sh 'git config --global credential.helper "cache --timeout=300"'
+            sh "git push https://${GITHUB_USER}:${GITHUB_TOKEN}@github.com/zhuyanghua2003/mail.git --tags --ipv4"
           }
 
           sh 'docker tag  $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:SNAPSHOT-$BUILD_NUMBER $REGISTRY/$DOCKERHUB_NAMESPACE/$PROJECT_NAME:$PROJECT_VERSION'
