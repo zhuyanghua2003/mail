@@ -91,17 +91,14 @@ pipeline {
             sh 'git config --global user.email "1191082340@qq.com"'
             sh 'git config --global user.name "zhuyanghua2003"'
             sh 'git tag -a $PROJECT_VERSION -m "$PROJECT_VERSION"'
+            // ========== 仅保留核心SSH配置，删除所有ssh-agent/ssh-add ==========
             sh '''
-              # 配置SSH环境
+              # 仅配置SSH密钥和known_hosts（Git自动读取密钥）
               mkdir -p ~/.ssh && chmod 700 ~/.ssh
               cp $GITHUB_SSH_KEY ~/.ssh/id_ed25519 && chmod 600 ~/.ssh/id_ed25519
               ssh-keyscan github.com >> ~/.ssh/known_hosts && chmod 644 ~/.ssh/known_hosts
           
-              # 启动ssh-agent并加载密钥（仅改这行：加 -N "" 跳过密码询问）
-              eval $(ssh-agent -s)
-              ssh-add -N "" ~/.ssh/id_ed25519 
-          
-              # 切换到SSH仓库地址并推送
+              # 直接切换地址并推送（Git会自动用~/.ssh/id_ed25519认证）
               git remote set-url origin git@github.com:zhuyanghua2003/mail.git
               git push origin --tags --ipv4
             '''
