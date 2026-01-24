@@ -104,10 +104,33 @@
     </dependencyManagement>
 
     <build>
+        <!-- ********** 新增：显式配置resources，确保模板文件被复制 ********** -->
+        <resources>
+            <resource>
+                <!-- 指向源码的resources目录 -->
+                <directory>src/main/resources</directory>
+                <!-- 包含所有文件/文件夹（重点：包含templates） -->
+                <includes>
+                    <include>**/*</include>
+                </includes>
+                <!-- 关闭过滤，避免Thymeleaf模板被篡改 -->
+                <filtering>false</filtering>
+            </resource>
+        </resources>
+        <!-- ********** 新增结束 ********** -->
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- 补充：显式指定repackage，确保打包为可执行jar -->
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
