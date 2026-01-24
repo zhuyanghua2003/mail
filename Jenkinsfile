@@ -30,18 +30,22 @@ pipeline {
       agent none
       steps {
         container('maven') {
-          withCredentials([string(credentialsId: 'sonar-qube', variable: 'SONAR_TOKEN')]) {
-            withSonarQubeEnv('sonar') {
-              sh 'echo 当前目录 `pwd`'
-              sh 'mvn clean install -Dmaven.test.skip=true -gs `pwd`/mvn_settings.xml'
-              sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar -gs `pwd`/mvn_settings.xml -Dsonar.login=$SONAR_TOKEN'
-            }
+          // 注释SonarQube相关执行逻辑（保留空步骤，不删stage）
+          // withCredentials([string(credentialsId: 'sonar-qube', variable: 'SONAR_TOKEN')]) {
+          //   withSonarQubeEnv('sonar') {
+          //     sh 'echo 当前目录 `pwd`'
+          //     sh 'mvn clean install -Dmaven.test.skip=true -gs `pwd`/mvn_settings.xml'
+          //     sh 'mvn org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184:sonar -gs `pwd`/mvn_settings.xml -Dsonar.login=$SONAR_TOKEN'
+          //   }
+          // }
 
-          }
+          // 注释SonarQube质量门禁等待逻辑
+          // timeout(unit: 'HOURS', activity: false, time: 1) {
+          //   waitForQualityGate 'true'
+          // }
 
-          timeout(unit: 'HOURS', activity: false, time: 1) {
-            waitForQualityGate 'true'
-          }
+          // 新增空echo，避免stage无步骤报错
+          sh 'echo "跳过SonarQube代码质量检查（组件暂不可用）"'
 
         }
 
