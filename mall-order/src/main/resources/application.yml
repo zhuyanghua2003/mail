@@ -55,5 +55,9 @@ rocketmq:
   consumer:
     group: order-consumer
 
+user:
+  names: zhangsan3
+  age: 183
+
 
 
